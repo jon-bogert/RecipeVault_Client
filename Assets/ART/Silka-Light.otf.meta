@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: 7e64cfa88f4b3034e85e87923bf7d9ea
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Silka
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 1f647b298e2afbe4cbc04ac44c22cd48, type: 3}
+  - {fileID: 12800000, guid: 64cd4e01d054b484b972b1a5982c94f4, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
