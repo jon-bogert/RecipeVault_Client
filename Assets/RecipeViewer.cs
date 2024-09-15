@@ -3,7 +3,6 @@ using System.IO;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UI;
 using YamlDotNet.RepresentationModel;
 
 public class RecipeViewer : MonoBehaviour
@@ -28,9 +27,6 @@ public class RecipeViewer : MonoBehaviour
     [SerializeField] TMP_Text _notesText;
     [SerializeField] RectTransform _notesBox;
     [SerializeField] RectTransform _notesTitle;
-    [Space]
-    [SerializeField] GameObject _utilityMenu;
-    [SerializeField] Image _utilityButton;
 
     string _content;
     System.UInt32 _id;
@@ -43,7 +39,6 @@ public class RecipeViewer : MonoBehaviour
     public void Activate(System.UInt32 id)
     {
         _loading.SetActive(true);
-        _utilityButton.gameObject.SetActive(true);
         string path = Manifest.k_repositoryRoot + id.ToString("X8") + "/recipe.yaml";
         _id = id;
         Manifest.instance.viewingOptions.useOz = (Manifest.instance.entries[id].category == Category.Cocktail);
@@ -57,24 +52,6 @@ public class RecipeViewer : MonoBehaviour
         _loading.SetActive(false);
         _failText.SetActive(false);
         _contentAll.SetActive(false);
-        _utilityMenu.SetActive(false);
-        _utilityButton.gameObject.SetActive(false);
-        _utilityButton.color = _inactiveColor;
-    }
-
-    public void ToggleUtilityMenu()
-    {
-        _utilityMenu.SetActive(!_utilityMenu.activeSelf);
-        if (_utilityMenu.activeSelf)
-        {
-            _utilityButton.color = _activeColor;
-            _utilityButton.GetComponentInChildren<TMP_Text>().fontStyle |= FontStyles.Bold;
-        }
-        else
-        {
-            _utilityButton.color = _inactiveColor;
-            _utilityButton.GetComponentInChildren<TMP_Text>().fontStyle &= ~FontStyles.Bold;
-        }
     }
 
     public void Load(string url)

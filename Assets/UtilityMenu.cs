@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,12 +5,15 @@ using UnityEngine.UI;
 public class UtilityMenu : MonoBehaviour
 {
     [SerializeField] float _increment = 0.25f;
+    [SerializeField] Color _activeColor = Color.grey;
+    [SerializeField] Color _inactiveColor = Color.black;
 
     [Header("References")]
     [SerializeField] TMP_Text _quantityText;
     [SerializeField] Toggle _massToggle;
     [SerializeField] Toggle _volumeToggle;
     [SerializeField] Toggle _textSizeToggle;
+    [SerializeField] Image _button;
 
     RecipeViewer _viewer;
 
@@ -23,6 +24,8 @@ public class UtilityMenu : MonoBehaviour
         _massToggle.isOn = Manifest.instance.viewingOptions.massImperial;
         _volumeToggle.isOn = Manifest.instance.viewingOptions.volumeImperial;
         _textSizeToggle.isOn = Manifest.instance.useLargerText;
+
+        gameObject.SetActive(false);
 
         SetQuantity();
     }
@@ -65,5 +68,20 @@ public class UtilityMenu : MonoBehaviour
     public void OnTextSizeToggle()
     {
         Manifest.instance.useLargerText = _textSizeToggle.isOn;
+    }
+
+    public void ToggleMenu()
+    {
+        gameObject.SetActive(!gameObject.activeSelf);
+        if (gameObject.activeSelf)
+        {
+            _button.color = _activeColor;
+            //_button.GetComponentInChildren<TMP_Text>().fontStyle |= FontStyles.Bold;
+        }
+        else
+        {
+            _button.color = _inactiveColor;
+            //_button.GetComponentInChildren<TMP_Text>().fontStyle &= ~FontStyles.Bold;
+        }
     }
 }

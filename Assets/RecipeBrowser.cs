@@ -11,13 +11,19 @@ public class RecipeBrowser : MonoBehaviour
     [SerializeField] GameObject _mealContent;
     [SerializeField] GameObject _dessertContent;
     [SerializeField] GameObject _cocktailContent;
+    [SerializeField] CanvasGroup _thisCanvasGroup;
 
     RecipeViewer _viewer;
+    CanvasGroup _search;
+
+    public Dictionary<string, RecipeButton> buttonReferences {  get; private set; }
 
     private void Start()
     {
         Manifest.instance.CallOnLoadComplete(OnRecipeLoad);
         _viewer = FindObjectOfType<RecipeViewer>();
+        _search = FindObjectOfType<SearchMenu>(true).GetComponent<CanvasGroup>();
+        _search.alpha = 0f;
     }
 
     private void OnRecipeLoad(bool success)
@@ -49,22 +55,27 @@ public class RecipeBrowser : MonoBehaviour
         dessertList.Sort((a, b) => a.Item2.name.CompareTo(b.Item2.name));
         cocktailList.Sort((a, b) => a.Item2.name.CompareTo(b.Item2.name));
 
+        buttonReferences = new();
+
         foreach (var entry in mealList)
         {
             RecipeButton rb = Instantiate(_recipeButtonPrefab, _mealContent.transform).GetComponent<RecipeButton>();
             rb.Setup(entry.Item2, entry.Item1, this);
+            buttonReferences.Add(entry.Item2.name, rb);
         }
 
         foreach (var entry in dessertList)
         {
             RecipeButton rb = Instantiate(_recipeButtonPrefab, _dessertContent.transform).GetComponent<RecipeButton>();
             rb.Setup(entry.Item2, entry.Item1, this);
+            buttonReferences.Add(entry.Item2.name, rb);
         }
 
         foreach (var entry in cocktailList)
         {
             RecipeButton rb = Instantiate(_recipeButtonPrefab, _cocktailContent.transform).GetComponent<RecipeButton>();
             rb.Setup(entry.Item2, entry.Item1, this);
+            buttonReferences.Add(entry.Item2.name, rb);
         }
     }
 
@@ -81,5 +92,25 @@ public class RecipeBrowser : MonoBehaviour
 
         TransitionManager.instance.moveComplete += () => { _viewer.Deactivate(); };
         TransitionManager.instance.TransitionRight(_viewer.gameObject, gameObject);
+    }
+
+    public void ToSearch()
+    {
+        if (TransitionManager.instance.isMoving)
+            return;
+
+        _search.gameObject.SetActive(true);
+        TransitionManager.instance.moveComplete += () => { _thisCanvasGroup.gameObject.SetActive(false); };
+        TransitionManager.instance.FadeTransition(_thisCanvasGroup, _search);
+    }
+
+    public void FromSearch()
+    {
+        if (TransitionManager.instance.isMoving)
+            return;
+
+        _thisCanvasGroup.gameObject.SetActive(true);
+        TransitionManager.instance.moveComplete += () => { _search.gameObject.SetActive(false); };
+        TransitionManager.instance.FadeTransition(_search, _thisCanvasGroup);
     }
 }

@@ -17,6 +17,12 @@ public class RecipeButton : MonoBehaviour
         text.text = entry.name;
     }
 
+    public void CopyFrom(RecipeButton other)
+    {
+        _id = other._id;
+        _browser = other._browser;
+    }
+
     public void OnPress()
     {
         if (TransitionManager.instance.isMoving)
