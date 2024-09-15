@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -13,12 +14,12 @@ public class SearchMenu : MonoBehaviour
 
     RecipeBrowser _browser;
     List<RecipeButton> _buttons = new();
-#if UNITY_WEBGL
-    TouchScreenKeyboard _keyboard;
-#endif
+    CustomKeyboard _keyboard;
+
 
 private void Start()
     {
+        _keyboard = FindObjectOfType<CustomKeyboard>(true);
         _browser = FindObjectOfType<RecipeBrowser>();
         gameObject.SetActive(false);
 
@@ -26,32 +27,36 @@ private void Start()
         _searchToBeginText.SetActive(true);
     }
 
-#if UNITY_WEBGL
-    private void Update()
+    void OnManualKey(string letter)
     {
-        if (_keyboard == null)
-            return;
-        if (!TouchScreenKeyboard.visible)
-        {
-            _keyboard = null;
-            return;
-        }
-
-        if (_keyboard.text != _searchText.text)
-        {
-            _searchText.text = _keyboard.text;
-            OnStringChange();
-        }
+        _searchText.text += letter;
+        OnStringChange();
     }
-#endif
+    void OnManualBack()
+    {
+        if (_searchText.text == "")
+            return;
+
+        _searchText.text = _searchText.text.Remove(_searchText.text.Length - 1);
+    }
+    void OnManualSubmit()
+    {
+        _keyboard.Deactivate();
+    }
 
     public void OnBoxSelect()
     {
 #if UNITY_WEBGL
-        if (TouchScreenKeyboard.isSupported)
+        //if (TouchScreenKeyboard.isSupported)
+        if (Application.isMobilePlatform)
         {
-            TouchScreenKeyboard.hideInput = true;
-            _keyboard = TouchScreenKeyboard.Open(_searchText.text, TouchScreenKeyboardType.Default, true);
+            if (_keyboard.isActiveAndEnabled)
+                return;
+
+            _keyboard.Activate();
+            _keyboard.onEdit += OnManualKey;
+            _keyboard.onBack += OnManualBack;
+            _keyboard.onEnter += OnManualSubmit;
         }
 #endif
     }
@@ -85,11 +90,27 @@ private void Start()
         _searchToBeginText.SetActive(false);
 
         str = str.ToLower();
+        List<string> searchWords = str.Split(' ').ToList();
+        searchWords.RemoveAll((s) => { return s == ""; });
+
         List<string> names = new();
         foreach (ManifestEntry entry in Manifest.instance.entries.Values)
         {
-            string entryLower = entry.name.ToLower();
-            if (entryLower.Contains(str))
+            string[] entryWords = entry.name.ToLower().Split(' ');
+            int count = 0;
+            foreach (string s in searchWords)
+            {
+                bool found = false;
+                foreach (string e in entryWords)
+                {
+                    if (!found && e.Contains(s))
+                    {
+                        found = true;
+                        ++count;
+                    }
+                }
+            }
+            if (count >= searchWords.Count)
             {
                 names.Add(entry.name);
             }
@@ -111,7 +132,7 @@ private void Start()
             RecipeButton oldRB = _browser.buttonReferences[name];
             RecipeButton newRB = Instantiate(oldRB, _scrollContent).GetComponent<RecipeButton>();
             newRB.CopyFrom(oldRB);
-
+            newRB.GetComponentInChildren<TextSizer>().CopyFrom(oldRB.GetComponentInChildren<TextSizer>());
             _buttons.Add(newRB);
         }
 

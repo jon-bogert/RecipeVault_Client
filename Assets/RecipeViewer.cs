@@ -39,6 +39,11 @@ public class RecipeViewer : MonoBehaviour
     public void Activate(System.UInt32 id)
     {
         _loading.SetActive(true);
+        if (Manifest.instance.viewingOptions.useLargerText)
+        {
+            Manifest.instance.textSizeChanged?.Invoke(true);
+        }
+
         string path = Manifest.k_repositoryRoot + id.ToString("X8") + "/recipe.yaml";
         _id = id;
         Manifest.instance.viewingOptions.useOz = (Manifest.instance.entries[id].category == Category.Cocktail);

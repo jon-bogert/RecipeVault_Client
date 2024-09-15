@@ -14,6 +14,7 @@ public class RecipeBrowser : MonoBehaviour
     [SerializeField] CanvasGroup _thisCanvasGroup;
 
     RecipeViewer _viewer;
+    CustomKeyboard _keyboard;
     CanvasGroup _search;
 
     public Dictionary<string, RecipeButton> buttonReferences {  get; private set; }
@@ -23,6 +24,7 @@ public class RecipeBrowser : MonoBehaviour
         Manifest.instance.CallOnLoadComplete(OnRecipeLoad);
         _viewer = FindObjectOfType<RecipeViewer>();
         _search = FindObjectOfType<SearchMenu>(true).GetComponent<CanvasGroup>();
+        _keyboard = FindObjectOfType<CustomKeyboard>(true);
         _search.alpha = 0f;
     }
 
@@ -82,6 +84,7 @@ public class RecipeBrowser : MonoBehaviour
     public void LoadRecipe(System.UInt32 id)
     {
         _viewer.Activate(id);
+        _keyboard.Deactivate();
         TransitionManager.instance.TransitionLeft(gameObject, _viewer.gameObject);
     }
 
