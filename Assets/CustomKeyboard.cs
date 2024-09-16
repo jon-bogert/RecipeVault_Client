@@ -1,5 +1,4 @@
 using System;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,6 +12,7 @@ public class CustomKeyboard : MonoBehaviour
 
     [Header("References")]
     [SerializeField] Image _shiftKey;
+    [SerializeField] GameObject _background;
 
     bool _shift = false;
     bool _caps = false;
@@ -31,6 +31,8 @@ public class CustomKeyboard : MonoBehaviour
     float _timer = 0f;
     float _doubleTimer = 0f;
 
+    public bool isActive { get { return _background.activeSelf; } }
+
     private void Awake()
     {
         _invTime = 1f / _transitionTime;
@@ -45,7 +47,7 @@ public class CustomKeyboard : MonoBehaviour
         _inactiveColor = _shiftKey.color;
 
         transform.localPosition = _downPosition;
-        gameObject.SetActive(false);
+        _background.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -68,7 +70,7 @@ public class CustomKeyboard : MonoBehaviour
             }
             _state = State.Down;
             _transform.localPosition = _downPosition;
-            gameObject.SetActive(false);
+            _background.gameObject.SetActive(false);
         }
 
         float t = 1f - (_timer * _invTime);
@@ -89,13 +91,16 @@ public class CustomKeyboard : MonoBehaviour
         if (_state != State.Down)
             return;
 
-        gameObject.SetActive(true);
+        _background.gameObject.SetActive(true);
         _state = State.GoingUp;
         _timer = _transitionTime;
     }
 
-    public void Deactivate()
+    public void Deactivate(bool desktopOverride = false)
     {
+        if (!Application.isMobilePlatform && !desktopOverride)
+            return;
+
         if (_state != State.Up)
             return;
 

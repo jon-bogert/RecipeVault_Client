@@ -41,16 +41,16 @@ private void Start()
     }
     void OnManualSubmit()
     {
-        _keyboard.Deactivate();
+        _keyboard.Deactivate(true);
     }
 
-    public void OnBoxSelect()
+    public void OnBoxSelect(bool desktop = false)
     {
 #if UNITY_WEBGL
         //if (TouchScreenKeyboard.isSupported)
-        if (Application.isMobilePlatform)
+        if (Application.isMobilePlatform || desktop)
         {
-            if (_keyboard.isActiveAndEnabled)
+            if (_keyboard.isActive)
                 return;
 
             _keyboard.Activate();
